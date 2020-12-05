@@ -25,3 +25,14 @@ hcl:#888785 eyr:2027 ecl:hzl byr:1966
 pid:853607760
 iyr:2012
 hgt:155cm
+
+hgt:61cm
+iyr:2019
+byr:1952 pid:#1468e6 eyr:2033 ecl:#7d39d5 hcl:z
+
+pid:2306523501
+eyr:2032 hcl:z ecl:brn
+cid:266 hgt:151in iyr:2024
+byr:2008
+
+hcl:#a97842 hgt:191cm eyr:2025 ecl:gry byr:1923 pid:574171850 iyr:2019
