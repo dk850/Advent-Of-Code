@@ -1,0 +1,27 @@
+byr:1971
+eyr:2039
+hgt:172in pid:170cm hcl:17106b iyr:2012 ecl:gry
+cid:339
+
+hgt:161cm eyr:2027
+ecl:grn iyr:2011 hcl:#a97842 byr:1977 pid:910468396
+
+cid:257
+ecl:gry hgt:186cm iyr:2012
+byr:1941
+eyr:2029
+pid:108935675
+hcl:#cfa07d
+
+hgt:165in
+hcl:#cfa07d eyr:2035 pid:82570731
+byr:1973
+cid:74 ecl:xry
+
+eyr:2020 cid:105 iyr:2012 pid:947726115
+hcl:#ceb3a1 ecl:grn byr:1966 hgt:151cm
+
+hcl:#888785 eyr:2027 ecl:hzl byr:1966
+pid:853607760
+iyr:2012
+hgt:155cm
