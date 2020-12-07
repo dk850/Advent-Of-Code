@@ -37,38 +37,41 @@ def get_bag_info(rule):
 
     return bags
 
-def check_bag_recursively(checking_bag):
-    global global_possible_bags
-    #print("Checking:", checking_bag)
+def sum_inner_bags_recursively(checking_bag):
+    #print("Checking bag:", checking_bag)
 
-    # base cases
-    in_bag_count= 0
+    # base case is bag empty
     for rule in bag_rules:
-
-        # case #1, bag empty
         if( (checking_bag in rule[0]) & (rule[1][0][0] == 0) ):
-            #print("Bag empty")
-            global_possible_bags.append(checking_bag)
-            return
+            #print("Empty bag")
+            return (int(1), False) # this false signifies not to add the bag to the sum later on
 
-        # case #2, bag not in any other bag
-        for secondary in rule[1]:
-            if checking_bag not in secondary:
-                pass
-            else:
-                in_bag_count += 1
-    if in_bag_count == 0:
-        #print("Base bag")
-        global_possible_bags.append(checking_bag)
-        return
-
+    # find the rule that relates to the bag we need to check
     for rule in bag_rules:
-        for secondary in rule[1]:
-            if checking_bag in secondary:
-                check_bag_recursively(rule[0])
-                global_possible_bags.append(checking_bag)
+        if checking_bag in rule[0]:
+            current_bag_rule = rule
+            break
 
-# Example1 = 4
+    # find bags that are in our bag via the rule and sum recursively, adding amount of bags
+    #print("Working rule:", current_bag_rule)
+    inner_bag_loop_sum = 0
+    for inner_bag in current_bag_rule[1]:
+        # parse output: (sum, offset_bool)
+        output_value = sum_inner_bags_recursively(inner_bag[1])
+        sum = output_value[0]
+        offset = output_value[1]
+
+        inner_bag_loop_sum += inner_bag[0] * sum
+        if offset:
+            #print("Add offset of:", inner_bag[0])
+            inner_bag_loop_sum += inner_bag[0]
+
+    #print(current_bag_rule[0], "contains", inner_bag_loop_sum, "bags")
+    return (int(inner_bag_loop_sum), True)
+
+
+# example1 = 32
+# example2 = 126
 f = open("input.txt", "r")
 infile = f.read().splitlines()
 f.close()
@@ -79,22 +82,12 @@ for rule in infile:
     bag_info = get_bag_info(rule)
     bag_rules.append(bag_info)
 
-# for debug
+# print rules for debug
 if 0:
     print("Rules:")
     for rule in bag_rules:
         print(rule)
     print("\n")
 
-goal_bag = "shiny gold"
-global_possible_bags = []
-# add every bag that shows up to the list
-check_bag_recursively(goal_bag)
-
-# sort out the global list, remove duplicates and the goal bag
-single_bags = []
-for bag in global_possible_bags:
-    if (bag not in single_bags) & (bag != goal_bag):
-        single_bags.append(bag)
-
-print(len(single_bags))
+start_bag = "shiny gold"
+print("End sum:", sum_inner_bags_recursively(start_bag)[0])
