@@ -23,8 +23,7 @@ increment = 1
 validity_index = 0
 old_validity_index = 0
 
-not_found = True
-while not_found:
+while True:
     timestamp_t += increment
 
     # since they are all prime numbers we can do this to validate and get the index where we are valid at
