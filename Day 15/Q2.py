@@ -44,9 +44,9 @@ while True:
     except:
         print("Died")
         exit()
-        
-    # find the 2020th number spoken
-    if turn == 2020:
+
+    # find the 30000000th number spoken
+    if turn == 30000000:
         print("Turn:", turn, "Number spoken:", str(latest_number) + ":" + str(numbers_spoken[latest_number]))
         break
     else:
