@@ -1,8 +1,7 @@
 def left_right_maths(equation):
     # base
-    if len(equation) == 1:
-        total = int(equation[0])
-    elif len(equation) == 3:
+
+    if len(equation) == 3:
         total = int(equation[0])
         # there are only 2 operators, + and *
         if equation[1] == '*':
@@ -18,45 +17,67 @@ def left_right_maths(equation):
             total *= int(left_right_maths(equation[:-2]))
         else:
             total += int(left_right_maths(equation[:-2]))
+
+    print("Result:", total)
     return total
 
-def do_maths(equation):
-    print("Equation:", equation)
-    active_equation = []
-    bracketed_expression = []
+def do_maths(equation, size = 0):
+    print("Main Equation:", equation)
+    inner_equation = []
+    skip = False
+    count = 0
 
-    # check for brackets, maths them first and keep a number and operator
-    inBracket = False
-    for element in equation:
-        print(element)
+    # if no brackets we can just compute it
+    if ("(" not in equation) and (")" not in equation):
+        print("Base case")
+        return int(left_right_maths(equation))
 
-        if '(' in element and not inBracket: #wong
-            inBracket = True
-            bracketed_expression.append(element[1:])
-        elif ')' in element:
-            inBracket = False
-            bracketed_expression.append(element[0:-1])
-            active_equation.append(do_maths(bracketed_expression))
-            bracketed_expression.clear()
-        elif (inBracket):
-            bracketed_expression.append(element)
-        else:
-            active_equation.append(element)
+    # otherwise we need to find a matching bracket
+    else:
+        # loop over equation until we find the start of a bracket
+        for pos in range(len(equation)):
+            print("Inner Equation:", inner_equation)
+            print(equation[pos])
+            # we have already computed value below so skip x
+            if skip > 0:
+                print("skipping")
+                skip -= 1
+            # find bracket that matches singular bracket
+            elif (equation[pos] == "("):
+                print("found ( at", pos, "pos2in", range(pos+1, len(equation)))
+                count += 1
 
-        print("Active:", active_equation, "Bracketed:", bracketed_expression)
-    print("End EQ:", active_equation)
+                # look for matching )
+                for pos2 in range(pos+1, len(equation)):
+                    print("searching for matching ) count of (:", count, "searchstring:", equation[pos:len(equation)])
+                    print(equation[pos2])
+                    if equation[pos2] == "(":
+                        count += 1
+                        print("Found another (. Count:", count)
+                    elif equation[pos2] == ")":
+                        print("Found a ). check if matches")
+                        count -= 1
 
-    total = left_right_maths(bracketed_expression if (len(active_equation) == 0) else active_equation)
-
-    print("Total:", total)
-    return str(total) # to keep it all consistent
-
+                        # if we have found matching bracket, skip that many positions and add sum to inner equation
+                        if count == 0:
+                            print("count is 0. Matches")
+                            skip = len(equation[pos:pos2])
+                            intotal = do_maths(equation[pos+1:pos2])
+                            print("adding:", intotal)
+                            print("skipping", skip)
+                            inner_equation.append(str(intotal))
+                            break
+            else:
+                inner_equation.append(equation[pos])
+        print("fell out")
+        return do_maths(inner_equation)
 f = open("input.txt", "r")
 infile = f.read().splitlines()
 f.close()
 
 sum = 0
-for equation in infile:
-    equation = equation.split(' ')
-    sum += int(do_maths(equation))
+for line in infile:
+    equation = [x for element in line.split() for x in element]
+
+    sum += do_maths(equation)
 print("End sum:", sum)
