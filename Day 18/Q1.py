@@ -86,4 +86,4 @@ for line in infile:
     equation = [x for element in line.split() for x in element]
 
     sum += do_maths(equation)
-print("End sum:", sum) 
+print("End sum:", sum)
