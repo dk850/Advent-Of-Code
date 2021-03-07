@@ -41,4 +41,5 @@ for i in range(preamble_size, len(infile)):
         break
 
 # could improve the check list function to sort the list and add top to tail
-# and decrease either top or tail if too big or too small compared to goal number
+#   and decrease either top or tail if too big or too small compared to goal number
+#   but this script runs on average at 100ms with a busy OS. Its fine for this

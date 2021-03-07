@@ -1,5 +1,3 @@
-import math
-
 def decode_row(seat):
     #print("Seat:", seat[0:7])
     row = ""
