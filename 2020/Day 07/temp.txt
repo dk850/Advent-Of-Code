@@ -1,0 +1,5 @@
+clear purple bags contain 5 faded indigo bags, 3 muted purple bags.
+bright teal bags contain 4 striped plum bags.
+dim fuchsia bags contain 2 vibrant tomato bags, 2 dotted purple bags, 2 plaid indigo bags.
+dark magenta bags contain 1 shiny aqua bag, 2 posh white bags.
+dark chartreuse bags contain 1 dotted brown bag, 4 vibrant magenta bags.
