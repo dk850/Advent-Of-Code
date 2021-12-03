@@ -1,7 +1,7 @@
 f = open("input1.txt", "r")
 mylist = f.read().splitlines()
 
-position = [0, 0]  # our position as horizontal and depth
+position = [0, 0, 0]  # our position as horizontal, depth and aim
 
 # Decode instructions
 for item in mylist:
@@ -12,13 +12,16 @@ for item in mylist:
 
     # decode the command
     if command == "forward":  # modify our horizontal position
-        position[0] += value
+        position[0] += value  # increase horizontal
+        position[1] += position[2]*value  # increase depth by aim multiplied by value
 
     elif command == "down":  # modify our depth
-        position[1] += value  # increase depth
+        #position[1] += value  # increase depth
+        position[2] += value  # increase aim
 
     elif command == "up":  # modify our depth
-        position[1] -= value  # decrease depth
+        #position[1] -= value  # decrease depth
+        position[2] -= value  # decrease aim
 
     else:
         print("unrecognised command: "+command)  # make sure we account for all commands
