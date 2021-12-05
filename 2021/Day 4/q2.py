@@ -23,14 +23,14 @@ def check_board(board):
     for row in board:
         if (row[0][0] == 'x') and (row[1][0] == 'x') and (row[2][0] == 'x') and \
                 (row[3][0] == 'x') and (row[4][0] == 'x'):
-            print("BINGO")
+            #print("BINGO")
             return 1
 
     # check each column (5 tall)
     for i in range(5):
         if (board[0][i][0] == 'x') and (board[1][i][0] == 'x') and (board[2][i][0] == 'x') and \
                 (board[3][i][0] == 'x') and (board[4][i][0] == 'x'):
-            print("BINGO")
+            #print("BINGO")
             return 1
 
     return 0
@@ -81,16 +81,19 @@ boards = new_boards
 
 # draw numbers
 bingo = -1  # to hold the winning number and board
+active_boards = len(boards)
 for number in release_order:
-    print("Drew:", number)
+    #print("Drew:", number)
 
     # put number on each board
-    for board in boards:
+    for board in boards[:]:
         fill_board(board, number)
-        if check_board(board) == 1:  # check if we have bingo
+        if check_board(board) == 1:  # check if we have bingo and remove the board from the running
             bingo = [number, board]
+            active_boards -= 1
+            boards.remove(board)
 
-    if bingo != -1:
+    if active_boards == 0:  # if we have no more active boards we have found the one to win last
         print()
         break
 
