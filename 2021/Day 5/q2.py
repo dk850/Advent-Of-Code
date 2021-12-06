@@ -2,13 +2,13 @@ def print_arena(arena):
     for row in arena:
         print(row)
 
-def draw_arena(ruleset, arena):
 
+
+def draw_arena(ruleset, arena):
     for rule in ruleset:  # loop over each rule
-        print()
-        print("Active rule:", rule)
-        if rule[0][0] == rule[1][0]:    # x rule -> X values are the same; we modify row
-            print("X rule")
+
+        # x rule -> X values are the same; we modify row
+        if rule[0][0] == rule[1][0]:
 
             # get start and end of coordinate to draw from
             x_value = rule[0][0]
@@ -25,7 +25,6 @@ def draw_arena(ruleset, arena):
 
 
         elif rule[0][1] == rule[1][1]:  # y rule -> Y values are the same; we modify column
-            print("Y rule")
 
             # get start and end of coordinate to draw from
             y_value = rule[0][1]
@@ -40,17 +39,45 @@ def draw_arena(ruleset, arena):
             for pos in range(x_start, x_end+1):
                 arena[y_value][pos] += 1
 
+
         else:  # otherwise we have a diagonal rule
-            arena[rule[0][0]][rule[0][1]] += 1
+            leftern = -1    # leftern most coordinate will be either rule 0 or rule 1
+            direction = -1  # direction of movement will be 0 for down and 1 for up
 
-            arena[rule[1][0]][rule[1][1]] += 1
-            print("non-rule")
+            # find leftern most rule
+            if rule[0][0] < rule[1][0]:  # if rule 0 x value is smaller than rule 1 x value, we have the leftern most rule
+                leftern = 0
+            else:
+                leftern = 1
 
-        print_arena(arena)
-        break
+            # find the direction we need to go in
+            if rule[leftern][1] > rule[0 if leftern == 1 else 1][1]:  # if our leftern rule has a larger Y then we need to go UP
+                direction = 1  # up
+            else:
+                direction = 0  # down
+
+            # draw the path
+            position = [rule[leftern][0], rule[leftern][1]]  # x, y of lefternmost rule
+            while 1:  # we dont know need to know the length of the line, can just loop until we reach the end
+                arena[position[1]][position[0]] += 1  # draw current position
+
+                # increase the position
+                if direction == 1:  # up direction
+                    position[0] += 1
+                    position[1] -= 1
+
+                else:  # down direction
+                    position[0] += 1
+                    position[1] += 1
+
+                # break if we have reached the other rule, meaning we have drew the whole line
+                if position == [rule[0 if leftern == 1 else 1][0], rule[0 if leftern == 1 else 1][1]]:
+                    arena[position[1]][position[0]] += 1  # draw position
+                    break
 
 
-f = open("testlist.txt", "r")
+
+f = open("input1.txt", "r")
 arena = f.read().splitlines()
 
 # parse file
@@ -75,6 +102,7 @@ for entry in flatten_list:
 arena = [ [0]*(x_max+1) for _ in range(y_max+1) ]
 draw_arena(full_ruleset, arena)
 #print_arena(arena)
+
 
 # determine how many lines overlap (how many >1s there are)
 count = 0
