@@ -1,108 +1,86 @@
-# used to print a board
-def display_board(board):
-    print()
-    for row in board:
+def print_arena(arena):
+    for row in arena:
         print(row)
-    print()
 
-# used to check if a board contains a number and if it does we change the 0 signifier to a 1 to show it is filled
-def fill_board(board, draw_number):
-    for row in board:
-        for number in row:
-            if draw_number in number:
-                new_number = ['x', number[1]]
-                row[row.index(number)] = new_number
-                return 1  # success, stop here
-    return 0  # failed
+def draw_arena(ruleset, arena):
 
-
-# used to see if we have a complete bingo (all 5 1's horizontal or vertical)
-def check_board(board):
-
-    # check each row (always 5 long)
-    for row in board:
-        if (row[0][0] == 'x') and (row[1][0] == 'x') and (row[2][0] == 'x') and \
-                (row[3][0] == 'x') and (row[4][0] == 'x'):
-            #print("BINGO")
-            return 1
-
-    # check each column (5 tall)
-    for i in range(5):
-        if (board[0][i][0] == 'x') and (board[1][i][0] == 'x') and (board[2][i][0] == 'x') and \
-                (board[3][i][0] == 'x') and (board[4][i][0] == 'x'):
-            #print("BINGO")
-            return 1
-
-    return 0
-
-
-f = open("input1.txt", "r")
-subsystem = f.read().splitlines()
-
-# get the initial release order from the subsystem file
-release_order = [int(x) for x in subsystem[0].split(',')]
-print(release_order)
-
-# build the boards
-subsystem = subsystem[2:]
-boards = [[]]
-boards_index = 0
-
-# get the list of strings out of the subsyetm list and order in a boards list
-for element in subsystem:
-    if element == '':
-        boards.append([])
-        boards_index += 1
-    else:
-        boards[boards_index].append(element)
-
-# split board row strings seperated by spaces into elements of int
-new_boards = []
-for board in boards:
-    new_board = []
-    for row in board:
-        new_board.append([int(x) for x in row.split(' ') if x])  # if x not empty then add the element as an int
-    new_boards.append(new_board)
-boards = new_boards  # done, now overwrite original variable
-
-# add another element to each value on each board to signify if the number has came out yet or not
-new_boards = []
-for board in boards:
-    new_board = []
-    for row in board:
-        new_row = []
-        for element in row:
-            new_element = ['o', element]
-            new_row.append(new_element)
-        new_board.append(new_row)
-    new_boards.append(new_board)
-boards = new_boards
-
-
-# draw numbers
-bingo = -1  # to hold the winning number and board
-active_boards = len(boards)
-for number in release_order:
-    #print("Drew:", number)
-
-    # put number on each board
-    for board in boards[:]:
-        fill_board(board, number)
-        if check_board(board) == 1:  # check if we have bingo and remove the board from the running
-            bingo = [number, board]
-            active_boards -= 1
-            boards.remove(board)
-
-    if active_boards == 0:  # if we have no more active boards we have found the one to win last
+    for rule in ruleset:  # loop over each rule
         print()
+        print("Active rule:", rule)
+        if rule[0][0] == rule[1][0]:    # x rule -> X values are the same; we modify row
+            print("X rule")
+
+            # get start and end of coordinate to draw from
+            x_value = rule[0][0]
+            y_start = rule[0][1]
+            y_end   = rule[1][1]
+            if y_start > y_end:  # make sure they are in order of smallest -> largest
+                temp = y_start
+                y_start = y_end
+                y_end = temp
+
+            # draw it on the grid
+            for pos in range(y_start, y_end+1):
+                arena[pos][x_value] += 1
+
+
+        elif rule[0][1] == rule[1][1]:  # y rule -> Y values are the same; we modify column
+            print("Y rule")
+
+            # get start and end of coordinate to draw from
+            y_value = rule[0][1]
+            x_start = rule[0][0]
+            x_end   = rule[1][0]
+            if x_start > x_end:  # make sure they are in order of smallest -> largest
+                temp = x_start
+                x_start = x_end
+                x_end = temp
+
+            # draw it
+            for pos in range(x_start, x_end+1):
+                arena[y_value][pos] += 1
+
+        else:  # otherwise we have a diagonal rule
+            arena[rule[0][0]][rule[0][1]] += 1
+
+            arena[rule[1][0]][rule[1][1]] += 1
+            print("non-rule")
+
+        print_arena(arena)
         break
 
 
-# get answer to question
-unmarked_total = 0
-for row in bingo[1]:
-    for element in row:
-        if element[0] == 'o':  # if element in row of winning board is unmarked (i.e. not X, not drawn) add to total
-            unmarked_total += element[1]
+f = open("testlist.txt", "r")
+arena = f.read().splitlines()
 
-print(unmarked_total*bingo[0])  # get answer
+# parse file
+full_ruleset = []
+for row in arena:
+    rule = []
+    rule.append([int(x) for x in row.split(' -> ')[0].split(',')])
+    rule.append([int(x) for x in row.split(' -> ')[1].split(',')])
+    full_ruleset.append(rule)
+
+# get the size of the arena from the largest value in the ruleset
+flatten_list = [j for sub in full_ruleset for j in sub]
+x_max = 0
+y_max = 0
+for entry in flatten_list:
+    if int(entry[0]) > x_max:
+        x_max = int(entry[0])
+    if int(entry[1]) > y_max:
+        y_max = int(entry[1])
+
+# build the arena
+arena = [ [0]*(x_max+1) for _ in range(y_max+1) ]
+draw_arena(full_ruleset, arena)
+#print_arena(arena)
+
+# determine how many lines overlap (how many >1s there are)
+count = 0
+for row in arena:
+    for element in row:
+        if element > 1:
+            count += 1
+print()
+print("Overlaps:", count)

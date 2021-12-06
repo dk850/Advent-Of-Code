@@ -1,21 +1,42 @@
+def print_arena(arena):
+    for row in arena:
+        print(row)
+
 def draw_arena(ruleset, arena):
-    for row in arena:
-        print(row)
+    for rule in ruleset:  # loop over each rule
+        if rule[0][0] == rule[1][0]:    # x rule -> X values are the same; we modify row
 
-    for rule in ruleset:
-        print(rule)
+            # get start and end of coordinate to draw from
+            x_value = rule[0][0]
+            y_start = rule[0][1]
+            y_end   = rule[1][1]
+            if y_start > y_end:  # make sure they are in order of smallest -> largest
+                temp = y_start
+                y_start = y_end
+                y_end = temp
 
-        if rule[0][0] == rule[1][0]:  # x rule
-            print("x")
-        elif rule[0][1] == rule[1][1]:  # y rule
-            print("y")
-            arena[rule[0][0]][rule[0][1]] = 1
-        break
+            # draw it on the grid
+            for pos in range(y_start, y_end+1):
+                arena[pos][x_value] += 1
 
-    for row in arena:
-        print(row)
 
-f = open("testlist.txt", "r")
+        elif rule[0][1] == rule[1][1]:  # y rule -> Y values are the same; we modify column
+
+            # get start and end of coordinate to draw from
+            y_value = rule[0][1]
+            x_start = rule[0][0]
+            x_end   = rule[1][0]
+            if x_start > x_end:  # make sure they are in order of smallest -> largest
+                temp = x_start
+                x_start = x_end
+                x_end = temp
+
+            # draw it
+            for pos in range(x_start, x_end+1):
+                arena[y_value][pos] += 1
+
+
+f = open("input1.txt", "r")
 arena = f.read().splitlines()
 
 # parse file
@@ -48,3 +69,13 @@ for entry in flatten_list:
 # build the arena
 arena = [ [0]*(x_max+1) for _ in range(y_max+1) ]
 draw_arena(active_ruleset, arena)
+#print_arena(arena)
+
+# determine how many lines overlap (how many >1s there are)
+count = 0
+for row in arena:
+    for element in row:
+        if element > 1:
+            count += 1
+print()
+print("Overlaps:", count)
