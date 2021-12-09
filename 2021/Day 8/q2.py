@@ -1,174 +1,193 @@
+def string_to_set(string):  # turns a string into a set and returns the set
+    rv = set()
+    for letter in string:
+        rv.add(letter)
+    return rv
+
+def set_to_string(set):  # turns a set into a string and returns the string
+    rv = ""
+    for item in set:
+        rv += item
+    return rv
+
+
 # parse and read in the notes and the output
-f = open("testlist.txt", "r")
+f = open("input1.txt", "r")
 note_lines = f.read().splitlines()
 note_lines = [x.split(' | ') for x in note_lines]  # split delimiter
 note_lines = [[note.split(' '), output.split(' ')] for (note, output) in note_lines]  # split on spaces
 
+
 # part 2 wants us to decode the output based on 10 inputs so;
-#    need to decode which line on the display corresponds to which letter
-
-# DICTIONARY KEY
-# T  = Top
-# UL = Upper Left
-# UR = Upper Right
-# M  = Middle
-# LL = Lower Left
-# LR = Lower Right
-# B  = Bottom
-
+#    need to decode which unique mix of letters in a random order are which letter
 running_total = 0  # the answer wants us to add up all the output numbers
 for recorded_signal in note_lines:
-    print()
-    print("NEW SIGNAL")
+
     # assign variables
     recorded_signal_values = recorded_signal[0]
     output_signal = recorded_signal[1]
 
     # initialise dictionary as it is different for each recorded line
-    segment_positions = {}  # store our positions in a dictionary for easy assigning
-    segment_positions["T"]  = set()  #         T T T
-    segment_positions["UL"] = set()  #       UL     UR
-    segment_positions["UR"] = set()  #       UL     UR
-    segment_positions["M"]  = set()  #         M M M
-    segment_positions["LL"] = set()  #       LL     LR
-    segment_positions["LR"] = set()  #       LL     LR
-    segment_positions["B"]  = set()  #         B B B
+    segment_letters = {}
 
-
-    # go over each number in the recorded signal and decode the inputs to determine the segment lines
-    for number in recorded_signal_values:
-        print(number)
-        if len(number) == 2:    # number 1
-            print("Decoded 1")
-            segment_positions["UR"].add(number[0])
-            segment_positions["UR"].add(number[1])
-            segment_positions["LR"].add(number[0])
-            segment_positions["LR"].add(number[1])
-
-        elif len(number) == 4:  # number 4
-            print("Decoded 4")
-            segment_positions["UL"].add(number[0])
-            segment_positions["UR"].add(number[1])
-            segment_positions["M"].add(number[2])
-            segment_positions["LR"].add(number[3])
-
-        elif len(number) == 3:  # number 7
-            print("Decoded 7")
-            segment_positions["T"].add(number[0])
-            segment_positions["UR"].add(number[1])
-            segment_positions["LR"].add(number[2])
-
-        #elif len(number) == 7:  # number 8
-        #    print("Decoded 8")
-        #    segment_positions["T"].add(number[0])
-        #    segment_positions["UL"].add(number[1])
-        #    segment_positions["UR"].add(number[2])
-        #    segment_positions["M"].add(number[3])
-        #    segment_positions["LL"].add(number[4])
-        #    segment_positions["LR"].add(number[5])
-        #    segment_positions["B"].add(number[6])
-        else:
-            continue
-        print(segment_positions)
-
-    # reduce list to correct letters only
-    single_set = set()
+    ## DECODE
+    # go over each number in the recorded signal and get the unique letters to determine the segments.
     while 1:
-        done_count = 0  # counter to see how many positions are complete so we can break out the while loop
+        for number in recorded_signal_values:
+            # 1
+            if (len(number) == 2) and ("1" not in segment_letters.keys()):
+                #print("Decoded 1:", number)
+                segment_letters["1"] = set(number[0])
+                segment_letters["1"].add(number[1])
+            # 4
+            elif (len(number) == 4) and ("4" not in segment_letters.keys()):  # number 4
+                #print("Decoded 4:", number)
+                segment_letters["4"] = set(number[0])
+                segment_letters["4"].add(number[1])
+                segment_letters["4"].add(number[2])
+                segment_letters["4"].add(number[3])
+            # 7
+            elif (len(number) == 3) and ("7" not in segment_letters.keys()):  # number 7
+                #print("Decoded 7:", number)
+                segment_letters["7"] = set(number[0])
+                segment_letters["7"].add(number[1])
+                segment_letters["7"].add(number[2])
+            # 8
+            elif (len(number) == 7) and ("8" not in segment_letters.keys()):  # number 8
+                #print("Decoded 8:", number)
+                segment_letters["8"] = set(number[0])
+                segment_letters["8"].add(number[1])
+                segment_letters["8"].add(number[2])
+                segment_letters["8"].add(number[3])
+                segment_letters["8"].add(number[4])
+                segment_letters["8"].add(number[5])
+                segment_letters["8"].add(number[6])
 
-        # loop over all positions until each only has 1 letter
-        for position in segment_positions:
 
-            # if theres only 1 element for the dictionary empty, this must be correct, so remove it everywhere else
-            if len(segment_positions[position]) == 1:
-                print("length1", position)
-                done_count += 1
-                single_set.add(segment_positions[position][0])  # add this position to a set (no duplicates in a set)
+            # for each loop we should be able to decode a further value based on set rules
+            # length 6 numbers: 0, 6, 9
+            elif (len(number) == 6) and (("0" not in segment_letters.keys()) or \
+                    ("6" not in segment_letters.keys()) or ("9" not in segment_letters.keys())):
+                # 9
+                if ("4" in segment_letters.keys()) and ("7" in segment_letters.keys()) and ("9" not in segment_letters.keys()):
+                    union_set = segment_letters["4"].union(segment_letters["7"])  # the union of 4 and 7 leaves LL and B empty
+                    if len(string_to_set(number).difference(union_set)) == 1:  # if theres 1 missing value from the difference we have found 9
+                        #print("Decoded 9:", number)
+                        segment_letters["9"] = set(number[0])
+                        segment_letters["9"].add(number[1])
+                        segment_letters["9"].add(number[2])
+                        segment_letters["9"].add(number[3])
+                        segment_letters["9"].add(number[4])
+                        segment_letters["9"].add(number[5])
+                # 0
+                if ("9" in segment_letters.keys()) and ("1" in segment_letters.keys()) and \
+                        (len(string_to_set(number).difference(segment_letters["1"])) == 4) and \
+                        ("0" not in segment_letters.keys()):  # 0-1 would leave 4 letters whereas 6-1 would leave 5
+                    if string_to_set(number) == segment_letters["9"]:  # 9-1 would also leave 4 so we get this first above and check we arent looking at the same number here
+                        continue
+                    #print("Decoded 0:", number)
+                    segment_letters["0"] = set(number[0])
+                    segment_letters["0"].add(number[1])
+                    segment_letters["0"].add(number[2])
+                    segment_letters["0"].add(number[3])
+                    segment_letters["0"].add(number[4])
+                    segment_letters["0"].add(number[5])
+                # 6
+                if ("9" in segment_letters.keys()) and ("1" in segment_letters.keys()) and \
+                        (len(string_to_set(number).difference(segment_letters["1"])) == 5) and \
+                        ("6" not in segment_letters.keys()):  # 0-1 would leave 4 letters whereas 6-1 would leave 5
+                    if string_to_set(number) == segment_letters["9"]:
+                        continue
+                    #print("Decoded 6:", number)
+                    segment_letters["6"] = set(number[0])
+                    segment_letters["6"].add(number[1])
+                    segment_letters["6"].add(number[2])
+                    segment_letters["6"].add(number[3])
+                    segment_letters["6"].add(number[4])
+                    segment_letters["6"].add(number[5])
 
-            # if the entry has more than 1 letter, we can remove those that are already specified elsewhere
-            if len(segment_positions[position]) != 1:
-                for letter in single_set:
-                    while letter in segment_positions[position]: segment_positions[position].remove(letter)
+            # numbers 2, 3 and 5
+            elif (len(number) == 5) and (("2" not in segment_letters.keys()) or \
+                    ("3" not in segment_letters.keys()) or ("5" not in segment_letters.keys())):
+                # 3
+                if ("1" in segment_letters.keys()) and ("3" not in segment_letters.keys()) and \
+                        (len(string_to_set(number).difference(segment_letters["1"])) == 3):  # 3-1 is 3 long, whereas 2-1 and 5-1 are both 4
+                    #print("Decoded 3:", number)
+                    segment_letters["3"] = set(number[0])
+                    segment_letters["3"].add(number[1])
+                    segment_letters["3"].add(number[2])
+                    segment_letters["3"].add(number[3])
+                    segment_letters["3"].add(number[4])
+                # 2, 5
+                if ("6" in segment_letters.keys()) and ("3" in segment_letters.keys()):  # we can use the number 6 to decode 2 and 5 if we have 3
+                    # 2
+                    if (len(string_to_set(number).difference(segment_letters["6"])) == 1) and ("2" not in segment_letters.keys()):  # 6-2 leaves 1
+                        if string_to_set(number) == segment_letters["3"]:  # make sure we arent looking at 3
+                            continue
+                        #print("Decoded 2:", number)
+                        segment_letters["2"] = set(number[0])
+                        segment_letters["2"].add(number[1])
+                        segment_letters["2"].add(number[2])
+                        segment_letters["2"].add(number[3])
+                        segment_letters["2"].add(number[4])
+                    # 5
+                    if (len(string_to_set(number).difference(segment_letters["6"])) == 0) and ("5" not in segment_letters.keys()):  # 6-5 leaves 0
+                        if string_to_set(number) == segment_letters["3"]:  # make sure we arent looking at the number 3
+                            continue
+                        #print("Decoded 5:", number)
+                        segment_letters["5"] = set(number[0])
+                        segment_letters["5"].add(number[1])
+                        segment_letters["5"].add(number[2])
+                        segment_letters["5"].add(number[3])
+                        segment_letters["5"].add(number[4])
 
-        if done_count == len(segment_positions):
+        if len(segment_letters) == 10:  # end while loop when we have all numbers
             break
 
-    # make all entries letters and not lists
-    for item in segment_positions:
-        segment_positions[item] = segment_positions[item][0]
 
-    print(segment_positions)
-    # now we know the positions we can decode the output number
+    ## GET OUTPUT
+    # decode the entries as strings to make it easy to do
     output_amount = ""
     for number in output_signal:
 
         # skip decoding easy (unique) numbers
         if len(number) == 2:
-            print("Decoded 1:", number)
+            #print("Found 1:", number)
             output_amount += "1"
         elif len(number) == 4:
-            print("Decoded 4:", number)
+            #print("Found 4:", number)
             output_amount += "4"
         elif len(number) == 3:
-            print("Decoded 3:", number)
+            #print("Found 3:", number)
             output_amount += "7"
         elif len(number) == 7:
-            print("Decoded 8:", number)
+            #print("Found 8:", number)
             output_amount += "8"
 
         # else we need to decode using positions from the above dictionary
         else:
-            print("UNDECODED number:", number)
+            if len(number) == 5:  # it could be 2, 3, 5
+                if string_to_set(number) == segment_letters["2"]:
+                    #print("Found 2:", number)
+                    output_amount += "2"
+                elif string_to_set(number) == segment_letters["3"]:
+                    #print("Found 3:", number)
+                    output_amount += "3"
+                elif string_to_set(number) == segment_letters["5"]:
+                    #print("Found 5:", number)
+                    output_amount += "5"
+            else:  # else must be length 6 - could be  0, 6, 9
+                if string_to_set(number) == segment_letters["0"]:
+                    #print("Found 0:", number)
+                    output_amount += "0"
+                elif string_to_set(number) == segment_letters["6"]:
+                    #print("Found 6:", number)
+                    output_amount += "6"
+                elif string_to_set(number) == segment_letters["9"]:
+                    #print("Found 9:", number)
+                    output_amount += "9"
 
-            # have to decode numbers 3, 5, 6, 9
-
-            # easy/unique ones to decode
-            if segment_positions["LR"] not in number:
-                print("Decoded 2")
-                output_amount += "2"
-            elif segment_positions["M"] not in number:
-                print("Decoded 0")
-                output_amount += "0"
-
-            # else we actually need to decode it
-            else:
-                # list of what each number SHOULD contain, translated to the letters
-                segment_3 = [segment_positions["T"], segment_positions["UR"], segment_positions["M"],
-                                segment_positions["LR"], segment_positions["B"]]
-                print(segment_3)
-
-
-    break
-
-
-
-
-
-    print(output_amount)
-
-
-
-
-# NOTE
-# Unique = 1(2), 4(4), 7(3), 8(7)
-
-""""
-number 9 may be only one we need
-        elif len(number) == 2:    # number 1
-            #print("Number 1")
-            segment_positions["UR"] = number[0]
-            segment_positions["LR"] = number[1]
-
-        elif len(number) == 4:  # number 4
-            #print("Number 4")
-            segment_positions["UL"] = number[0]
-            segment_positions["UR"] = number[1]
-            segment_positions["M"]  = number[2]
-            segment_positions["LR"] = number[3]
-
-        elif len(number) == 3:  # number 7
-            #print("Number 7")
-            segment_positions["T"]  = number[0]
-            segment_positions["UR"] = number[1]
-            segment_positions["LR"] = number[2]
-"""
+    #print(output_amount)
+    running_total += int(output_amount)
+    
+print("Total:", running_total)
