@@ -1,20 +1,83 @@
-# parse and read in the notes and the output
+# parse and read in the height map
 f = open("input1.txt", "r")
-note_lines = f.read().splitlines()
-note_lines = [x.split(' | ') for x in note_lines]  # split delimiter
-note_lines = [[note.split(' '), output.split(' ')] for (note, output) in note_lines]  # split on spaces
+input_heightmap = f.read().splitlines()
+heightmap = [list(int(x) for x in x) for x in input_heightmap]  # separate each string into its own int element in the list
 
-# part 1 only wants to deal with unique values in the output section
-# check for lengths of 2, 4, 3, or 7 in the output
-unique_values = 0
-for recorded_signal in note_lines:
-    output_signal = recorded_signal[1]
 
-    for number in output_signal:
-        if (len(number) == 2) or (len(number) == 4) or (len(number) == 3) or (len(number) == 7):
-            unique_values += 1
+# go over each row in the table and figure out if it a low point
+low_points = []
+for row_pos in range(len(heightmap)):
+    # setup row search variables to make code reading easier
+    top_row    = 1 if row_pos == 0 else 0
+    bottom_row = 1 if row_pos == (len(heightmap) - 1) else 0
 
-print(unique_values)
+    for col_pos in range(len(heightmap[row_pos])):
+        # setup column search variables for easy code reading
+        left_side = 1 if col_pos == 0 else 0
+        right_side = 1 if col_pos == (len(heightmap[row_pos]) - 1) else 0
+        position = heightmap[row_pos][col_pos]
 
-# NOTE
-# Unique = 1(2), 4(4), 7(3), 8(7)
+        # for a top row
+        if top_row:
+            # top left
+            if left_side:
+                if (position < heightmap[row_pos][col_pos+1]) and \
+                        (position < heightmap[row_pos+1][col_pos]):
+                    low_points.append(position)
+            # top right
+            elif right_side:
+                if (position < heightmap[row_pos][col_pos-1]) and \
+                        (position < heightmap[row_pos+1][col_pos]):
+                    low_points.append(position)
+            # other tops
+            else:
+                if (position < heightmap[row_pos][col_pos-1]) and (position < heightmap[row_pos][col_pos+1]) and \
+                        (position < heightmap[row_pos+1][col_pos]):
+                    low_points.append(position)
+
+        # for a bottom row
+        elif bottom_row:
+            # bottom left
+            if left_side:
+                if (position < heightmap[row_pos-1][col_pos]) and \
+                        (position < heightmap[row_pos][col_pos+1]):
+                    low_points.append(position)
+            # bottom right
+            elif right_side:
+                if (position < heightmap[row_pos-1][col_pos]) and \
+                        (position < heightmap[row_pos][col_pos-1]):
+                    low_points.append(position)
+            # other bottoms
+            else:
+                if (position < heightmap[row_pos-1][col_pos]) and \
+                        (position < heightmap[row_pos][col_pos-1]) and (position < heightmap[row_pos][col_pos+1]):
+                    low_points.append(position)
+
+        # for a left side
+        elif left_side:
+            if (position < heightmap[row_pos-1][col_pos]) and \
+                    (position < heightmap[row_pos][col_pos+1]) and \
+                    (position < heightmap[row_pos+1][col_pos]):
+                low_points.append(position)
+
+        # for a right side
+        elif right_side:
+            if (position < heightmap[row_pos-1][col_pos]) and \
+                    (position < heightmap[row_pos][col_pos-1]) and \
+                    (position < heightmap[row_pos+1][col_pos]):
+                low_points.append(position)
+
+        # for any other (normal) position
+        else:
+            if (position < heightmap[row_pos-1][col_pos]) and \
+                    (position < heightmap[row_pos][col_pos-1]) and (position < heightmap[row_pos][col_pos+1]) and \
+                    (position < heightmap[row_pos+1][col_pos]):
+                low_points.append(position)
+
+
+
+# answer wants sum of risk level which is low point height + 1
+sum = 0
+for point in low_points:
+    sum += 1 + point
+print(sum)
