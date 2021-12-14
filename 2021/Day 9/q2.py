@@ -75,20 +75,124 @@ def find_low_points(map):
 
 
 def r_find_basin(map, point, basin_points):
-    1+1
+    # make sure the point is valid
+    if not ((point[0] < len(map)) and (point[0] >= 0)):
+        return
+    if not ((point[1] < len(map[0])) and (point[1] >= 0)):
+        return
+
+
+    # if the point is a 9 we have got to the end of a basin
+    to_check = map[point[0]][point[1]]
+    if to_check == 9:
+        return basin_points
+
+
+    # otherwise add the current point to the list and keep searching
+    else:
+        basin_points.append(point)
+
+        # setup search variables to make code reading easier
+        top_row    = 1 if point[0] == 0 else 0
+        bottom_row = 1 if point[0] == (len(map) - 1) else 0
+        left_side = 1 if point[1] == 0 else 0
+        right_side = 1 if point[1] == (len(map[point[0]]) - 1) else 0
+
+        new_points = []
+        if top_row:
+            if left_side:
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+            if right_side:
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+            else:  # middle of top row
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+        if bottom_row:
+            if left_side:
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+            if right_side:
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+            else:  # middle of top row
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+        else:  # not top or bottom row
+            if left_side:
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+            if right_side:
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+            else:  # middle of top row
+                if [point[0], point[1]+1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]+1], basin_points))  # right
+                if [point[0], point[1]-1] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0], point[1]-1], basin_points))  # left
+                if [point[0]+1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]+1, point[1]], basin_points))  # down
+                if [point[0]-1, point[1]] not in basin_points:
+                    new_points.append(r_find_basin(map, [point[0]-1, point[1]], basin_points))  # up
+
+
+        # add new points to the basin list
+        for point_list in new_points:
+            if point_list is None:
+                continue
+            for point in point_list:
+                if point is None:
+                    continue
+                if point not in basin_points:  # avoid duplicates
+                    basin_points.append(point)
+        # note this could maybe be a function that we cann after we get values from the recursive function to add to the basin
+        #      before checking further values - see if this is quick enough first
+
+        return basin_points
 
 
 
 # parse and read in the height map
-f = open("testlist.txt", "r")
+f = open("input1.txt", "r")
 input_heightmap = f.read().splitlines()
 heightmap = [list(int(x) for x in x) for x in input_heightmap]  # separate each string into its own int element in the list
 
+# get list of low point heights and their position [height, [pos]]
 low_points = find_low_points(heightmap)
 
-# answer wants sum of risk level which is low point height + 1
-sum = 0
-print(low_points)
-for point, _ in low_points:
-    sum += 1 + point
-print(sum)
+# loop over each low point and determine the size of the basin and add to list
+basin_sizes = []
+for point, position in low_points:
+    basin_points = []
+    bpoints = r_find_basin(heightmap, position, basin_points)
+    basin_sizes.append(len(bpoints))
+
+# answer wants us to multiply the three largest basins
+basin_sizes.sort()
+ans = basin_sizes[-1] * basin_sizes[-2] * basin_sizes[-3]
+print(ans)
