@@ -1,4 +1,4 @@
-# parse and read in the height map
+# parse and read in the navigation
 f = open("input1.txt", "r")
 navigation = f.read().splitlines()
 

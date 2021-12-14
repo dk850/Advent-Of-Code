@@ -7,7 +7,7 @@ def display_grid(list_2d):
         print(a)
 
 
-# parse and read in the height map
+# parse and read in the octopus values
 f = open("../worklist.txt", "r")
 octopi_input = f.read().splitlines()
 octopi = [list(int(x) for x in x) for x in octopi_input]  # separate each string into its own int element in the list
