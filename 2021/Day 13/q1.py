@@ -65,6 +65,8 @@ paper = fold_paper(paper, fold_rules[0][0], fold_rules[0][1])
 for rule in fold_rules:
     paper = fold_paper(paper, rule[0], rule[1])
 display_grid(paper)
+
+
 # answer wants us to count the dots on the folded paper
 dot_count = sum([len(list(x for x in x if x)) for x in paper])  # in the paper, only pay attention to values > 0, and sum the length of these lists
 print("Dot count:", dot_count)
