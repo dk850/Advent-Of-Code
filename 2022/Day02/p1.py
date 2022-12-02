@@ -11,16 +11,13 @@ input = [x.split(' ') for x in input ]  # split input on , to separate it easier
 bigScore=0
 for round in input:
     score=0
-
     match round[0]:
         case "A":
             match round[1]:
                 case "X":
                     score=(1 + 3)
-
                 case "Y":
                     score=(2 + 6)
-
                 case "Z":
                     score=(3 + 0)
 
@@ -28,10 +25,8 @@ for round in input:
             match round[1]:
                 case "X":
                     score=(1 + 0)
-
                 case "Y":
                     score=(2 + 3)
-
                 case "Z":
                     score=(3 + 6)
 
@@ -39,12 +34,9 @@ for round in input:
             match round[1]:
                 case "X":
                     score=(1 + 6)
-
                 case "Y":
                     score=(2 + 0)
-
                 case "Z":
                     score=(3 + 3)
     bigScore+=score
-
 print(bigScore)
