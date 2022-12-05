@@ -29,11 +29,11 @@ for i in range(2, len(start_config)+1):  # loop over every line of instruction
             stacks[stack].append(box)
 print()
 
-# Function to shuffle queues by given amounts
+# Function to move boxes by given amounts into other stacks
 def move_box(box_from, box_to, stack_step):
     global stacks
     for step in range(1, stack_step+1):
-        stacks[box_to-1].append(stacks[box_from-1].pop())
+        stacks[box_to-1].append(stacks[box_from-1].pop())  # -1 due to 0-based queues but 1-based steps
 
 
 # Loop over instruction, parse, and call move box function

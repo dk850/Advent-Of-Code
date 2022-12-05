@@ -15,3 +15,5 @@ for entry in input:
 print(elves)
 print()
 print(sorted(elves.items(), key=lambda item: item[1]))
+
+# for day 2 just add the last 3 values in the sorted array
