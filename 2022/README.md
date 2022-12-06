@@ -19,3 +19,7 @@ Range overlap analysis
 ### Day 5
 Lots of parsing instructions and queues
 Deque data structure use
+
+### Day 6
+Substring manipulation
+Looking for duplicate entries in moving 'window' of string
