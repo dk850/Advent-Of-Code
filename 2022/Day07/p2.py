@@ -46,15 +46,14 @@ while True:
                     inspos-=1  # count back one
                     break
                 
-                # else it is a file to calculate size of
+                # else add to the child size
                 else:
                     size += int(input[inspos][0])
             d_sizes["".join([str(x) for x in d_stack])] = size
             
     inspos+=1
-    if inspos == len(input):
+    if inspos == len(input):  # break loop if we reach end of instructions
         break
-
 #print()
 #print("BASE_SIZES", d_sizes)
 
@@ -66,15 +65,16 @@ for k in sorted(d_kids, key=lambda k: len(d_kids[k]), reverse=False):
 #print("KID_ASSIGN", s_d_kids)
 #print()
 
+# loop until no kids to assign 
 while True:
     #print()
     #print("WHILE")
 
-    p_key_to_remove = []
+    p_key_to_remove = []  # cant dynamically edit list whilst looping on it
     for p_key in s_d_kids:
-        # check the values (inner kids) aren't dependant on a different (parent) key
         #print("parent", p_key)
 
+        # check the values (inner kids) aren't dependant on a different (parent) key
         for k_key in s_d_kids[p_key]:
             #print("kid", k_key)
             if k_key in s_d_kids.keys():
@@ -82,7 +82,7 @@ while True:
                 break
         
         # if k_keys not depenant, apply to sizes and remove p_key from s_d_keys
-        else:  # will only enter here if break above is not called
+        else:  # will only enter here if loop above is exhausted and not broken
             #print("apply to", d_sizes[p_key])
 
             for k_key in s_d_kids[p_key]:
@@ -90,18 +90,43 @@ while True:
                 d_sizes[p_key] += d_sizes[k_key]
             p_key_to_remove.append(p_key)
 
-    # remove keys and continue loop if any remain in s_d_kids
-    #print("start", s_d_kids)
+    # remove keys from main kid dict
     for remove in p_key_to_remove:
         del s_d_kids[remove]
-    #print("end", s_d_kids)
-    if len(s_d_kids) == 0:
+
+    if len(s_d_kids) == 0:  # exit while if no kids left 
         break
-#print(s_d_kids, d_sizes)
+
 
 # final loop to get answer
 sum=0
 for key in d_sizes:
     if d_sizes[key] <= 100000:
         sum += d_sizes[key]
-print(sum)
+#print(sum)
+
+
+### P2
+# calculate how much space we must free
+print("Total used size:", d_sizes["/"])
+unused_space = 70000000-d_sizes["/"]
+print("Unused space currently:", unused_space)
+to_free = 30000000-unused_space
+print("Must free up:", to_free)
+
+# get directory to delete
+candidate = ""
+can_size = 1111111111111111111111
+for dir in d_sizes.keys():
+    
+    # if size of dir is big enough to free enough space, store it
+    if d_sizes[dir] >= to_free:
+        print("CANDIDATE")
+        
+        # check if we have a smaller candidate than currently
+        if d_sizes[dir] < can_size:
+            print("smaller") 
+            candidate = dir  # if not, update the dir we will delete
+            can_size = d_sizes[dir]
+
+print("OUT:", can_size)  # dir to delete, answer
