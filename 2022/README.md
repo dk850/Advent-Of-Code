@@ -23,3 +23,10 @@ Deque data structure use
 ### Day 6
 Substring manipulation
 Looking for duplicate entries in moving 'window' of string
+
+### Day 7
+a
+
+### Day 8
+Cardinal direction parsing
+Checking if nearby numbers are < or >
