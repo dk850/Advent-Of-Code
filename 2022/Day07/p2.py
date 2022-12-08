@@ -121,12 +121,13 @@ for dir in d_sizes.keys():
     
     # if size of dir is big enough to free enough space, store it
     if d_sizes[dir] >= to_free:
-        print("CANDIDATE")
+        #print("CANDIDATE")
         
         # check if we have a smaller candidate than currently
         if d_sizes[dir] < can_size:
-            print("smaller") 
+            #print("smaller") 
             candidate = dir  # if not, update the dir we will delete
             can_size = d_sizes[dir]
 
-print("OUT:", can_size)  # dir to delete, answer
+print()
+print("Dir to delete size:", can_size)  # dir to delete, answer
