@@ -25,7 +25,9 @@ Substring manipulation
 Looking for duplicate entries in moving 'window' of string
 
 ### Day 7
-a
+Parsing commands 
+Summing nested directory sizes non-recursively
+
 
 ### Day 8
 Cardinal direction parsing
