@@ -33,6 +33,7 @@ Cardinal direction parsing
 Checking if nearby numbers are < or >
 
 ### Day 9
+Directional grid movements for head and tail pieces
 
 ### Day 10
 Increasing a register and clock by specific amounts
@@ -41,5 +42,6 @@ Checking values at specific clock intervals
 ### Day 11
 Monkey class setup and parse based on instructions
 Cycling through monkeys and operations, looking for specific events
+Mathsy bit for P2
 
 ### Day 12

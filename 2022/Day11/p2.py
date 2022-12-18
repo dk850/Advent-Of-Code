@@ -1,8 +1,8 @@
 from math import floor
 
-f = open("example", "r")
+f = open("input", "r")
 input = f.read().splitlines()
-
+supermodulo = 1
 
 # Hold money business in a class
 monkeys = {}
@@ -18,7 +18,7 @@ class Monkey:
     def operate(self, old):  # inspect
         #print("OPERATE", old, "->", floor(eval(str(str(old)+self.operation))/3))
         self.inspectionCount += 1
-        return floor(eval(str(str(old)+self.operation)))  # P2 no longer divided by 3
+        return floor(eval(str(str(old)+self.operation)) % supermodulo)  # P2 no longer divided by 3
     
     def operateAll(self):
         for item in self.items:
@@ -95,6 +95,7 @@ for line in input:
     elif "Test:" in line:
         line = line.strip("Test: ")
         line = line.split(" by ")
+        supermodulo *= int(line[1])
         monkeys[active_monkey].setTest(int(line[1]))
 
     # add true outcome
