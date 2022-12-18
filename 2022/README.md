@@ -45,3 +45,7 @@ Cycling through monkeys and operations, looking for specific events
 Mathsy bit for P2
 
 ### Day 12
+
+### Day 13
+Nested list comparisons via recursive method
+Modified bubble sort using part 1s comparison
