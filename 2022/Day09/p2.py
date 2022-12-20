@@ -62,14 +62,14 @@ def check_tail(t, ox, oy):
     tx, ty = T_pos[t]
     if t == 1:
         hx, hy = H_pos
-        print("H")
+        print("H @", hx, hy)
     else:
-        hx, hy = T_pos[t-1]
-        print("T")
+        hx, hy = T_pos[t-1]  # treat previous tail as head
+        print("T @", "["+str(hx)+", "+str(hy)+"]")
     moves = 0
     
     # compare x
-    print(tx-hx, ty-hy, T_pos, H_pos)
+    print(tx-hx, ty-hy, "\nT:", T_pos, "\nH:", H_pos)
     if tx-hx < -1:
         moves = 1
     elif tx-hx > +1:
@@ -81,7 +81,8 @@ def check_tail(t, ox, oy):
     elif ty-hy > +1:
         moves = 1
 
-    if moves != 0:  # if we need to move, move to last position of h
+    if moves != 0:  # if we need to move tail, move to last position of h(or previous tail)
+        print("MOVE DETECTED")
         move(t, [ox, oy])
         
     return moves
@@ -97,27 +98,31 @@ def move(knot, directon):
             t_visited.append(directon)
 
         if knot == 1:  # if first knot use H
-            print("H Moving T",str(knot), "to", directon)
+            print("H Moving T"+str(knot), "to", directon)
+            orig_x = T_pos[knot][0]
+            orig_y = T_pos[knot][1]
             T_pos[knot][0] = directon[0]  # move T to last position of H
             T_pos[knot][1] = directon[1]  # move T to last position of H
-            print("Checking", knot+1, "with", directon[0], directon[1])
-            return check_tail(knot+1, directon[0], directon[1])
+            print("Checking", knot+1, "with", orig_x, orig_y)
+            return check_tail(knot+1, orig_x, orig_y)
 
         else:  # if 2+ knot use previous tail
             print("T Moving T",str(knot), "to", T_pos[knot-1])
-            T_pos[knot][0] = T_pos[knot-1][0]  # move T to last position of H
-            T_pos[knot][1] = T_pos[knot-1][1]  # move T to last position of H
+            orig_x = T_pos[knot][0]
+            orig_y = T_pos[knot][1]
+            T_pos[knot][0] = directon[0]  # move T to last position of H
+            T_pos[knot][1] = directon[1]  # move T to last position of H
 
         print("T",str(knot), T_pos[knot])
         if knot != 9:
-            print("Checking", knot+1, "with", T_pos[knot-1][0], T_pos[knot-1][1])
-            return check_tail(knot+1, T_pos[knot-1][0], T_pos[knot-1][1])
+            print("Checking", knot+1, "with original pos:", orig_x, orig_y)
+            return check_tail(knot+1, orig_x, orig_y)
         return 1
         
     # switch on what directon
     orig_x, orig_y = knot
     match directon:
-        case "L":  # x -z
+        case "L":  # x -
             knot[0] -= 1
         case "R":  # x +
             knot[0] += 1
@@ -125,10 +130,10 @@ def move(knot, directon):
             knot[1] += 1
         case "D":  # y -
             knot[1] -= 1
-    print("H", knot)
+    print("H moved to", knot)
     
     # need to check if T needs to move also if we moved H
-    print("Checking 1 with", orig_x, orig_y)
+    print("Checking 1 with original pos:", orig_x, orig_y)
     return check_tail(1, orig_x, orig_y)
 
 
@@ -142,6 +147,7 @@ for line in input:
         t_count += move(H_pos, line[0])
         print_grid()
         print()   
+    
     
 print()
 print(t_count)

@@ -34,6 +34,7 @@ Checking if nearby numbers are < or >
 
 ### Day 9
 Directional grid movements for head and tail pieces
+My tail function allows 1 movement per iteration so doesnt work for part 2
 
 ### Day 10
 Increasing a register and clock by specific amounts

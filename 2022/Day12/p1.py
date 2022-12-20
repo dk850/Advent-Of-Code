@@ -1,9 +1,8 @@
-from importlib.resources import path
 import string
 height_map = dict()
 for index, letter in enumerate(string.ascii_lowercase):
 	height_map[letter] = index + 1
-f = open("example", "r")
+f = open("input", "r")
 input = f.read().splitlines()
 
 # Function to print the map (survey or directional)
@@ -47,10 +46,10 @@ print()
 
 # helper function to compare elevations - 1/True yes_move || 0/False no_move
 def check_valid_path(orig, new, path):
-    print("O", orig, "N", new, "P", path)
+    #print("O", orig, "N", new, "P", path)
     # allow any amount down or strictly 1 above
     if height_map[survey[new]] <= height_map[survey[orig]]+1:
-        if path[-1] == new:
+        if new in path:
             #print("Cant go back on oneself")
             return 0
         return 1
@@ -59,53 +58,75 @@ def check_valid_path(orig, new, path):
     
 
 # function to recursively find the next step in a path
+current_path = [s_pos]  # always start at S
 g_valid_paths = []
+g_shortestLen = 1000000000
+g_shortestPath = []
 def recurse_step(pos, path_taken):
-    global g_valid_paths
-    print(path_taken)
-    move = True  # can only move one time per recurse
-    
+    global g_valid_paths, g_shortestPath, g_shortestLen
+
+    # stop case if we are still processing a path greater than the current best
+    if len(path_taken) > g_shortestLen:
+        return
+
     # GOAL base case reached E
     if pos == e_pos:
-        g_valid_paths.append(path_taken)
-        move = False
-    
-    #print("Current pos:", pos, "letter:", survey[pos], "height map:", height_map[survey[pos]])
+        print("FOUND PATH")
+        g_shortestPath = path_taken.copy()
+        g_shortestLen = len(path_taken)
+        return 
         
     # recursive case, take available path
     # UP
-    if pos[1] - 1 >= MIN_Y and move:
+    if pos[1] - 1 >= MIN_Y:
         u_pos = (pos[0], pos[1]-1)
-        ##print("UP pos:", u_pos, "letter:", survey[u_pos])
+        #print("UP pos:", u_pos, "letter:", survey[u_pos])
         if check_valid_path(pos, u_pos, path_taken):
-            print("Up valid")
-            recurse_step(u_pos, path_taken+str(", "+u_pos))
-            print("HERE", path_taken)
+            #print("Up valid")
+            new_path = path_taken.copy()
+            new_path.append(u_pos)
+            #print("NEWPATH:", new_path)
+            recurse_step(u_pos, new_path)
 
     # DOWN
-    if pos[1] + 1 <= MAX_Y and move:
+    if pos[1] + 1 <= MAX_Y:
         d_pos = (pos[0], pos[1]+1)
-        ##print("DOWN pos:", d_pos, "letter:", survey[d_pos])
+        #print("DOWN pos:", d_pos, "letter:", survey[d_pos])
         if check_valid_path(pos, d_pos, path_taken):
-            print("Down valid")
-            recurse_step(d_pos, path_taken+d_pos)
+            #print("Down valid")
+            new_path = path_taken.copy()
+            new_path.append(d_pos)
+            #print("NEWPATH:", new_path)
+            recurse_step(d_pos, new_path)
     
     # LEFT
-    if pos[0] - 1 >= MIN_X and move:
+    if pos[0] - 1 >= MIN_X:
         l_pos = (pos[0]-1, pos[1])
-        ##print("LEFT pos:", l_pos, "letter:", survey[l_pos])
+        #print("LEFT pos:", l_pos, "letter:", survey[l_pos])
         if check_valid_path(pos, l_pos, path_taken):
-            print("Left valid")
-            recurse_step(l_pos, path_taken+l_pos)
+            #print("Left valid")
+            new_path = path_taken.copy()
+            new_path.append(l_pos)
+            #print("NEWPATH:", new_path)
+            recurse_step(l_pos, new_path)
     
     # RIGHT
-    if pos[0] + 1 <= MAX_X and move:
+    if pos[0] + 1 <= MAX_X:
         r_pos = (pos[0]+1, pos[1])
-        ##print("RIGHT pos:", r_pos, "letter:", survey[r_pos])
+        #print("RIGHT pos:", r_pos, "letter:", survey[r_pos])
         if check_valid_path(pos, r_pos, path_taken):
-            print("Right valid")
-            recurse_step(r_pos, path_taken+r_pos)
+            #print("Right valid")
+            new_path = path_taken.copy()
+            new_path.append(r_pos)
+            #print("NEWPATH:", new_path)
+            recurse_step(r_pos, new_path)
+    
+    print("BOTTOM NO VALID PATHS. Died at:", len(path_taken), g_shortestLen)
 
-recurse_step(s_pos, "")
+recurse_step(s_pos, current_path)
 print()
-print(len(g_valid_paths))
+#print(g_valid_paths)
+#print(len(g_valid_paths))
+
+print(g_shortestPath)
+print(g_shortestLen-1)
